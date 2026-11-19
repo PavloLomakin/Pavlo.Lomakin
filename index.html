@@ -73,17 +73,29 @@
       box-sizing: border-box;
     }
     .links .discord-title {
+      display: block;
+      width: 100%;
       padding: 12px 20px;
       background-color: #222;
+      border: none;
       border-radius: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      font-family: inherit;
+      font-size: 1em;
       font-weight: 500;
+      color: #fff;
+      text-align: center;
+      cursor: pointer;
       box-sizing: border-box;
+      transition: background-color 0.3s;
+    }
+    .links .discord-title:hover {
+      background-color: #333;
     }
     .links .split {
       display: flex;
       gap: 10px;
-      margin: 10px 0 0;
+      margin: 6px 0 0;
       padding: 0;
       width: 100%;
       box-sizing: border-box;
@@ -91,12 +103,13 @@
     .links .split a {
       flex: 1;
       margin: 0;
-      padding: 12px 10px;
+      padding: 9px 8px;
       width: auto;
       max-width: none;
       background-color: #222;
       border-radius: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      font-size: 0.9em;
     }
     .links .split a:hover {
       background-color: #333;
@@ -106,6 +119,72 @@
     }
     .links .split .closed {
       color: #ffd700;
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      background: #222;
+      border-radius: 8px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .modal-title {
+      font-size: 1.1em;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .modal-btn {
+      display: block;
+      margin: 10px auto 0;
+      padding: 12px 20px;
+      background-color: #333;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: background-color 0.3s;
+    }
+    .modal-btn:hover {
+      background-color: #444;
+    }
+    .modal-btn .open {
+      color: #8be04e;
+    }
+    .modal-btn .closed {
+      color: #ffd700;
+    }
+    .modal-close {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #ccc;
+      font-size: 1.5em;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .modal-close:hover {
+      color: #fff;
     }
     .links a.sub {
       width: 60%;
@@ -144,10 +223,10 @@
   <section class="links">
     <a href="https://stockanalysis.com/?ref=pavlo" target="_blank" rel="noopener">1. Сайт для Анализа Акций</a>
     <div class="discord-group">
-      <div class="discord-title">2. Доступ к Discord-сообществу</div>
+      <button class="discord-title" id="discord-title-btn" type="button">2. Доступ к Discord-сообществу</button>
       <div class="split">
         <a href="https://discord.gg/4V76gKuGZb" target="_blank" rel="noopener"><span class="open">Открытому</span> (бесплатному)</a>
-        <a href="https://www.patreon.com/PavloLomakin" target="_blank" rel="noopener"><span class="closed">Закрытому</span> (платному)</a>
+        <a href="https://www.patreon.com/cw/PavloLomakin/membership" target="_blank" rel="noopener"><span class="closed">Закрытому</span> (платному)</a>
       </div>
     </div>
     <a href="https://www.dataroma.com/m/home.php" target="_blank" rel="noopener">3. Куда инвестируют Супер-Инвесторы</a>
@@ -209,6 +288,16 @@
     opacity: 0.6;
   }
 </style>
+
+  <!-- Модальное окно выбора Discord-сообщества -->
+  <div class="modal-overlay" id="discord-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Доступ к Discord-сообществу">
+      <button class="modal-close" id="discord-modal-close" type="button" aria-label="Закрыть">×</button>
+      <div class="modal-title">Доступ к Discord-сообществу</div>
+      <a href="https://discord.gg/4V76gKuGZb" target="_blank" rel="noopener" class="modal-btn"><span class="open">Открытый</span> (бесплатный) Discord</a>
+      <a href="https://www.patreon.com/cw/PavloLomakin/membership" target="_blank" rel="noopener" class="modal-btn"><span class="closed">Закрытый</span> (платный) Discord</a>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -425,6 +514,34 @@
         }, 4000);
       }
 
+    })();
+  </script>
+
+  <script>
+    (function () {
+      // Модальное окно выбора Discord-сообщества
+      var overlay = document.getElementById('discord-modal');
+      var openBtn = document.getElementById('discord-title-btn');
+      var closeBtn = document.getElementById('discord-modal-close');
+
+      function openModal() {
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeModal() {
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
+      });
     })();
   </script>
 </body>
